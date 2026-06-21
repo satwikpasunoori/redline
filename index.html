@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Redline — Résumé Review</title>
+  <meta name="description" content="Upload your résumé and get it marked up like an editor would, before a recruiter sees it." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23B3261E'/%3E%3Cpath d='M9 22 L20 9 L24 13 L13 26 Z' fill='%23fff'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="wrap header-row">
+      <div class="wordmark">
+        <span class="wordmark-mark">¶</span>
+        <span>Redline</span>
+      </div>
+      <p class="tagline">Get your résumé marked up before someone else does.</p>
+    </div>
+  </header>
+
+  <main class="wrap layout">
+
+    <!-- INPUT PANEL -->
+    <section class="panel input-panel" aria-label="Upload your résumé">
+      <h2 class="panel-title">01 — Drop it in</h2>
+
+      <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Upload résumé PDF">
+        <input type="file" id="resumeFile" accept="application/pdf,.pdf" hidden />
+        <div class="dropzone-content">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M12 3v12m0-12 4 4m-4-4-4 4M5 17v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2"/>
+          </svg>
+          <p id="dropzoneText">Drag a PDF here, or click to choose a file</p>
+          <p class="dropzone-hint">PDF only · works best under 5 pages</p>
+        </div>
+      </div>
+
+      <label class="field-label" for="jobDescription">Job description <span class="optional">(optional — gives you a keyword match)</span></label>
+      <textarea id="jobDescription" rows="6" placeholder="Paste the job listing here if you want to see how well your résumé matches it…"></textarea>
+
+      <button id="analyzeBtn" class="btn-primary" disabled>
+        <span id="analyzeBtnLabel">Mark it up</span>
+      </button>
+
+      <p id="formError" class="form-error" role="alert" hidden></p>
+    </section>
+
+    <!-- RESULTS PANEL -->
+    <section class="panel results-panel" aria-label="Review results">
+      <h2 class="panel-title">02 — The markup</h2>
+
+      <div id="emptyState" class="empty-state">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+          <path d="M4 4h12l4 4v12H4z"/>
+          <path d="M16 4v4h4"/>
+          <path d="M8 13h8M8 17h5"/>
+        </svg>
+        <p>Your notes will show up here once you upload something.</p>
+      </div>
+
+      <div id="loadingState" class="loading-state" hidden>
+        <div class="pen-loader" aria-hidden="true"></div>
+        <p id="loadingText">Reading your résumé…</p>
+      </div>
+
+      <div id="resultsState" class="results-state" hidden>
+
+        <div class="score-row">
+          <div class="stamp" id="scoreStamp">
+            <span id="scoreValue">--</span>
+            <span class="stamp-label">/ 100</span>
+          </div>
+          <p id="summaryText" class="summary-text"></p>
+        </div>
+
+        <div class="result-block" id="keywordBlock" hidden>
+          <h3>Keyword match</h3>
+          <p class="match-line"><span id="matchPercent">--</span>% of the job description shows up in your résumé</p>
+          <div class="chip-group">
+            <div class="chip-col">
+              <p class="chip-col-label">Already there</p>
+              <ul id="matchedKeywords" class="chip-list chip-list--matched"></ul>
+            </div>
+            <div class="chip-col">
+              <p class="chip-col-label">Missing</p>
+              <ul id="missingKeywords" class="chip-list chip-list--missing"></ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-block">
+          <h3>Sections</h3>
+          <div class="section-row">
+            <div>
+              <p class="chip-col-label">Found</p>
+              <ul id="sectionsFound" class="plain-list plain-list--good"></ul>
+            </div>
+            <div>
+              <p class="chip-col-label">Missing or weak</p>
+              <ul id="sectionsMissing" class="plain-list plain-list--bad"></ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-block" id="formattingBlock" hidden>
+          <h3>Formatting flags</h3>
+          <ul id="formattingFlags" class="plain-list plain-list--bad"></ul>
+        </div>
+
+        <div class="result-block" id="bulletBlock" hidden>
+          <h3>Bullet rewrites</h3>
+          <div id="bulletFeedback" class="bullet-list"></div>
+        </div>
+
+        <div class="result-block">
+          <h3>Top fixes</h3>
+          <ol id="topSuggestions" class="numbered-list"></ol>
+        </div>
+
+      </div>
+
+      <div id="errorState" class="error-state" hidden>
+        <p id="errorText"></p>
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-row">
+      <div class="footer-meta">
+        <p class="footer-name">Built by <strong>SATWIK PASUNOORI</strong></p>
+        <p class="footer-email"><a href="mailto:satwikpasunoori@gmail.com">satwikpasunoori@gmail.com</a></p>
+        <p class="footer-note">Files are read in memory and sent to the Gemini API to generate this analysis — nothing is stored on a server.</p>
+      </div>
+      <a class="btn-secondary" href="https://digitalheroesco.com" target="_blank" rel="noopener noreferrer">Built for Digital Heroes</a>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

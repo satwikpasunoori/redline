@@ -1,0 +1,2 @@
+# No third-party packages — api/analyze.py only uses the Python standard library.
+# This file exists so Vercel reliably detects the project as using the Python runtime.
